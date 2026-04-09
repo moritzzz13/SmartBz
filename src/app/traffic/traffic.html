@@ -1,1 +1,36 @@
-<p>traffic works!</p>
+@if(allTrafficEvents != null) {
+    <mat-checkbox
+        type="checkbox"
+        [(ngModel)]="showValid"
+    >Nur aktuelle Verkehrsmeldungen anzeigen</mat-checkbox>
+    @if(!showValid) {
+        @for(e of allTrafficEvents; track e.title) {
+            <mat-card appearance="outlined" (click)="openTrafficDetail(e)">
+                <mat-card-header>
+                    <mat-card-title>{{e.title}}</mat-card-title>
+                    <mat-card-subtitle>{{ e.description }}</mat-card-subtitle>
+                </mat-card-header>
+                <mat-card-actions align="end">
+                    <button matButton (click)="openTrafficDetail(e); $event.stopPropagation()">Details ansehen</button>
+                </mat-card-actions>
+            </mat-card>
+        }
+    } @else {
+        @for(e of validTrafficEvents; track e.title) {
+            <mat-card appearance="outlined" (click)="openTrafficDetail(e)">
+                <mat-card-header>
+                    <mat-card-title>{{e.title}}</mat-card-title>
+                    <mat-card-subtitle>{{ e.description }}</mat-card-subtitle>
+                </mat-card-header>
+                <mat-card-actions align="end">
+                    <button matButton (click)="openTrafficDetail(e); $event.stopPropagation()">Details ansehen</button>
+                </mat-card-actions>
+            </mat-card>
+        } @empty {
+            <p>Keine aktuellen Verkehrsmeldungen</p>
+        }
+    }
+    
+} @else {
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+}

@@ -5,14 +5,14 @@
     <div>
         @if(temperature != null) {
             <mat-card appearance="outlined" (click)="routeToWeather()">
-            <mat-card-header>
-                <mat-card-title>{{temperature}}°C &bull; {{ mood }}</mat-card-title>
-                <mat-card-subtitle>Echtzeit-Wetterdaten für Bozen und Umgebung. Bleibe immer auf dem neuesten Stand über Temperatur, Niederschlag und Wetterwarnungen.</mat-card-subtitle>
-            </mat-card-header>
-            <mat-card-actions align="end">
-                <button matButton (click)="routeToWeather(); $event.stopPropagation()">Details ansehen</button>
-            </mat-card-actions>
-                </mat-card>
+                <mat-card-header>
+                    <mat-card-title>{{temperature}}C &bull; {{ mood }}</mat-card-title>
+                    <mat-card-subtitle>Echtzeit-Wetterdaten für Bozen und Umgebung. Bleibe immer auf dem neuesten Stand über Temperatur, Niederschlag und Wetterwarnungen.</mat-card-subtitle>
+                </mat-card-header>
+                <mat-card-actions align="end">
+                    <button matButton (click)="routeToWeather(); $event.stopPropagation()">Details ansehen</button>
+                </mat-card-actions>
+            </mat-card>
                 
 
         <mat-card appearance="outlined" (click)="routeToTraffic()">
@@ -24,9 +24,19 @@
                 <button matButton (click)="routeToTraffic(); $event.stopPropagation()">Details ansehen</button>
             </mat-card-actions>
         </mat-card>
-        } @else {
-                    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
-                }
-                
+        
+        <a href="https://www.suedtirolmobil.info/de/#/" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
+            <mat-card appearance="outlined">
+                <mat-card-header>
+                <mat-card-title>Öffentliche Verkehrsmittel</mat-card-title>
+                <mat-card-subtitle>
+                    Finde jederzeit die schnellste und sicherste Route durch die Stadt. Mit Südtirol Mobil findet jeder sein Öffi!
+                </mat-card-subtitle>
+                </mat-card-header>
+            </mat-card>
+        </a>
+    } @else {
+        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    } 
     </div>
 </div>
