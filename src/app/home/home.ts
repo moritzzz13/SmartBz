@@ -17,16 +17,16 @@ export class Home {
   temperature!: number;
   mood!: string;
 
-  
+
   constructor(
     private router: Router,
     private sb: MatSnackBar,
-    private odService: OpenDataService
+    private odService: OpenDataService,
   ) {}
 
 
   ngOnInit() {
-    this.odService.getTemperature()
+    this.odService.getRealtimeTemperature()
       .then(ret => {
         this.temperature = ret;
 

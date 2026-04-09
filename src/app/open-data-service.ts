@@ -4,7 +4,7 @@ import { MatSnackBar } from "@angular/material/snack-bar";
 import { Observable, lastValueFrom, map } from "rxjs";
 
 const WEATHER_URL =
-  'https://tourism.api.opendatahub.com/v1/Weather/Measuringpoint';
+  'https://tourism.api.opendatahub.com/v1/Weather';
 
 @Injectable({ providedIn: 'root' })
 export class OpenDataService {
@@ -14,13 +14,11 @@ export class OpenDataService {
     private sb: MatSnackBar
   ) {}
 
-  getTemperature(): Promise<any> {
-    return lastValueFrom(this.http
-      .get<any>(`${WEATHER_URL}/1EAA30C85A81408782AE2B863D675F79?language=DE&removenullvalues=false`)
-      .pipe(
-        map(response => response?.Temperature)
-      ));
+  getRealtimeTemperature(): Promise<any> {
+    return lastValueFrom(this.http.get<any>(`${WEATHER_URL}/Realtime/1242`)
+  );
   }
+
 
   showErrorSnackBar(error: string) {
     this.sb.open(
