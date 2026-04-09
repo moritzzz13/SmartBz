@@ -4,7 +4,7 @@ import { MatSnackBar } from "@angular/material/snack-bar";
 import { Observable, lastValueFrom, map } from "rxjs";
 import { TrafficEvent } from "./traffic-event";
 
-const WEATHER_URL = 'https://tourism.api.opendatahub.com/v1/Weather/Measuringpoint';
+const WEATHER_URL ='https://tourism.api.opendatahub.com/v1/Weather';
 const TRAFFIC_URL = 'https://mobility.api.opendatahub.com/v2/flat%2Cevent/%2A/latest?limit=200&offset=0&shownull=false&distinct=true';
 
 
@@ -22,12 +22,9 @@ export class OpenDataService {
   *                                              *
   ************************************************/
 
-  getTemperature(): Promise<any> {
-    return lastValueFrom(this.http
-      .get<any>(`${WEATHER_URL}/1EAA30C85A81408782AE2B863D675F79?language=DE&removenullvalues=false`)
-      .pipe(
-        map(response => response?.Temperature)
-      ));
+  getRealtimeTemperature(): Promise<any> {
+    return lastValueFrom(this.http.get<any>(`${WEATHER_URL}/Realtime/1242`)
+  );
   }
 
 
