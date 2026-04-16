@@ -22,9 +22,14 @@ export class OpenDataService {
   *                                              *
   ************************************************/
 
-  getRealtimeTemperature(): Promise<any> {
+  getRealtimeWeather(): Promise<any> {
     return lastValueFrom(this.http.get<any>(`${WEATHER_URL}/Realtime/1242`)
   );
+  }
+
+  getForecastWeather(): Promise<any> {
+    return lastValueFrom(this.http.get<any>(`${WEATHER_URL}/Forecast/021008`)
+    );
   }
 
 

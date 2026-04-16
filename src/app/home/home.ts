@@ -14,7 +14,7 @@ import {MatProgressBarModule} from '@angular/material/progress-bar';
   styleUrl: './home.scss',
 })
 export class Home {
-  temperature!: number;
+  temperature: number | null = null;
   mood!: string;
 
 
@@ -26,21 +26,22 @@ export class Home {
 
 
   ngOnInit() {
-    this.odService.getRealtimeTemperature()
+    this.odService.getRealtimeWeather()
       .then(ret => {
-        this.temperature = ret;
+        this.temperature = ret.t ? parseFloat(ret.t) : null;;
 
-        const temp = parseFloat(ret);
-
-        if (temp < 0) {
+        if(this.temperature) {
+          if ( this.temperature < 0) {
           this.mood = "cold";
-        } else if (temp < 10) {
+        } else if (this.temperature < 10) {
           this.mood = "cool";
-        } else if (temp < 20) {
+        } else if (this.temperature < 20) {
           this.mood = "mild";
         } else {
           this.mood = "warm";
         }
+        }
+
     })
       .catch(error => this.odService.showErrorSnackBar(error.message));
   }

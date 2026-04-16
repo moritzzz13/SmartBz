@@ -1,0 +1,189 @@
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.weather-dashboard {
+  padding: 3rem 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  font-family: 'Roboto', sans-serif;
+
+  // Header Styling (aus deinem Entwurf)
+  h1 {
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 900;
+    line-height: 1.1;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(135deg, #005c97 0%, #363795 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-transform: uppercase;
+    letter-spacing: -1px;
+  }
+
+  h2 {
+    font-size: clamp(1.1rem, 2vw, 1.4rem);
+    font-weight: 400;
+    color: #666;
+    margin-bottom: 4rem;
+    border-left: 5px solid #005c97;
+    padding-left: 1rem;
+  }
+
+  // Das Grid für die zwei Karten
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 2.5rem;
+  }
+
+  // Karten Styling (aus deinem Entwurf + Anpassungen)
+  mat-card.weather-card {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    border-radius: 20px;
+    background: #ffffff;
+    border: 2px solid transparent;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    animation: fadeUp 0.6s ease-out forwards;
+    opacity: 0;
+    padding: 1rem;
+
+    // Verzögerte Animation für die Karten
+    @for $i from 1 through 10 {
+      &:nth-child(#{$i}) {
+        animation-delay: #{$i * 0.15}s;
+      }
+    }
+
+    &:hover {
+      transform: translateY(-10px) scale(1.02);
+      border-color: #005c97;
+      box-shadow: 0 20px 40px rgba(0, 92, 151, 0.15);
+    }
+
+    mat-card-header {
+      padding-bottom: 1rem;
+    }
+
+    mat-card-title {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: #222;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    mat-card-subtitle {
+      font-size: 1.1rem;
+      color: #777;
+      font-weight: 500;
+    }
+  }
+
+  // INNENLEBEN DER KARTEN (NEU)
+
+  // Die riesige Haupt-Zahl
+  .main-metric {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    margin: 2rem 0 3rem;
+
+    .value {
+      font-size: 5rem;
+      font-weight: 900;
+      line-height: 1;
+      background: linear-gradient(135deg, #005c97 0%, #363795 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -3px;
+    }
+
+    .unit {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #666;
+      margin-left: 0.5rem;
+    }
+
+    // Für Vorhersage (Min - Max)
+    &.dual-metric {
+      .value { font-size: 3.5rem; letter-spacing: -2px; }
+      .min { color: #555; background: none; -webkit-text-fill-color: #555; }
+      .divider { font-size: 2rem; color: #ccc; margin: 0 1rem; }
+    }
+  }
+
+  .weather-desc {
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #005c97;
+    margin-top: -1.5rem;
+    margin-bottom: 2rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  // Detail Boxen (Luftdruck, Feuchtigkeit etc.)
+  .details-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 1rem;
+    margin-top: auto; // Drückt es nach unten
+  }
+
+  .detail-pill {
+    background: #f4f7fb;
+    border-radius: 16px;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: background 0.3s;
+
+    &:hover {
+      background: #e6eef5;
+    }
+
+    &.highlight {
+      background: rgba(0, 92, 151, 0.1);
+      border: 1px solid rgba(0, 92, 151, 0.2);
+    }
+
+    .icon {
+      font-size: 1.5rem;
+    }
+
+    .info {
+      display: flex;
+      flex-direction: column;
+
+      .label {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        color: #888;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+      }
+
+      .val {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #222;
+      }
+    }
+  }
+
+  .loading-spinner {
+    text-align: center;
+    padding: 3rem;
+    color: #888;
+    font-style: italic;
+  }
+}

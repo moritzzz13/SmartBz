@@ -1,36 +1,49 @@
-@if(allTrafficEvents != null) {
-    <mat-checkbox
-        type="checkbox"
-        [(ngModel)]="showValid"
-    >Nur aktuelle Verkehrsmeldungen anzeigen</mat-checkbox>
-    @if(!showValid) {
-        @for(e of allTrafficEvents; track e.title) {
-            <mat-card appearance="outlined" (click)="openTrafficDetail(e)">
-                <mat-card-header>
-                    <mat-card-title>{{e.title}}</mat-card-title>
-                    <mat-card-subtitle>{{ e.description }}</mat-card-subtitle>
-                </mat-card-header>
-                <mat-card-actions align="end">
-                    <button matButton (click)="openTrafficDetail(e); $event.stopPropagation()">Details ansehen</button>
-                </mat-card-actions>
-            </mat-card>
-        }
+<div class="traffic-dashboard">
+    @if(allTrafficEvents != null) {
+
+        <div class="controls">
+            <mat-checkbox type="checkbox" [(ngModel)]="showValid">
+                Nur aktuelle Verkehrsmeldungen anzeigen
+            </mat-checkbox>
+        </div>
+
+        <div class="traffic-grid">
+            @if(!showValid) {
+                @for(e of allTrafficEvents; track e.title) {
+                    <mat-card appearance="outlined" (click)="openTrafficDetail(e)">
+                        <mat-card-header>
+                            <mat-card-title>{{e.title}}</mat-card-title>
+                            <mat-card-subtitle>{{ e.description }}</mat-card-subtitle>
+                        </mat-card-header>
+                        <mat-card-actions align="end">
+                            <button matButton (click)="openTrafficDetail(e); $event.stopPropagation()">Details ansehen</button>
+                        </mat-card-actions>
+                    </mat-card>
+                }
+            } @else {
+                @for(e of validTrafficEvents; track e.title) {
+                    <mat-card appearance="outlined" (click)="openTrafficDetail(e)">
+                        <mat-card-header>
+                            <mat-card-title>{{e.title}}</mat-card-title>
+                            <mat-card-subtitle>{{ e.description }}</mat-card-subtitle>
+                        </mat-card-header>
+                        <mat-card-actions align="end">
+                            <button matButton (click)="openTrafficDetail(e); $event.stopPropagation()">Details ansehen</button>
+                        </mat-card-actions>
+                    </mat-card>
+                } @empty {
+                    <div class="empty-state">
+                        <span class="icon"></span>
+                        <p>Zurzeit liegen keine Verkehrsmeldungen vor. Gute Fahrt!</p>
+                    </div>
+                }
+            }
+        </div>
+
     } @else {
-        @for(e of validTrafficEvents; track e.title) {
-            <mat-card appearance="outlined" (click)="openTrafficDetail(e)">
-                <mat-card-header>
-                    <mat-card-title>{{e.title}}</mat-card-title>
-                    <mat-card-subtitle>{{ e.description }}</mat-card-subtitle>
-                </mat-card-header>
-                <mat-card-actions align="end">
-                    <button matButton (click)="openTrafficDetail(e); $event.stopPropagation()">Details ansehen</button>
-                </mat-card-actions>
-            </mat-card>
-        } @empty {
-            <p>Keine aktuellen Verkehrsmeldungen</p>
-        }
+        <div class="loading-state">
+            <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+            <p>Verkehrsdaten werden geladen...</p>
+        </div>
     }
-    
-} @else {
-    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
-}
+</div>

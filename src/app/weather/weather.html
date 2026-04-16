@@ -1,1 +1,110 @@
-<p>{{temperatur}}</p>
+<div class="weather-dashboard">
+  <!-- Header Bereich -->
+  <h1>Wetterstation & Vorhersage</h1>
+  <h2>Live-Daten und Aussichten für Südtirol</h2>
+
+  <div class="cards-grid">
+
+    <!-- KARTE 1: AKTUELLES WETTER -->
+    <mat-card class="weather-card">
+      <mat-card-header>
+        <mat-card-title>Aktuell</mat-card-title>
+        <mat-card-subtitle>Live-Messwerte</mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+        <!-- Große Temperatur-Anzeige -->
+        <div class="main-metric" *ngIf="temperature !== null; else loading">
+          <span class="value">{{ temperature }}</span>
+          <span class="unit">°C</span>
+        </div>
+
+        <!-- Detail-Grid -->
+        <div class="details-grid">
+          <div class="detail-pill" *ngIf="luftfeuchtigkeit !== null">
+            <span class="icon">💧</span>
+            <div class="info">
+              <span class="label">Feuchtigkeit</span>
+              <span class="val">{{ luftfeuchtigkeit }} %</span>
+            </div>
+          </div>
+
+          <div class="detail-pill" *ngIf="pressure !== null">
+            <span class="icon">⏱️</span>
+            <div class="info">
+              <span class="label">Luftdruck</span>
+              <span class="val">{{ pressure }} hPa</span>
+            </div>
+          </div>
+
+          <div class="detail-pill" *ngIf="flowrate !== null">
+            <span class="icon">🌧️</span>
+            <div class="info">
+              <span class="label">Niederschlag</span>
+              <span class="val">{{ flowrate }} mm</span>
+            </div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- KARTE 2: VORHERSAGE -->
+    <mat-card class="weather-card">
+      <mat-card-header>
+        <mat-card-title>Vorhersage</mat-card-title>
+        <!-- Datum formatieren (z.B. 12.04.2026) -->
+        <mat-card-subtitle *ngIf="forecastDate">{{ forecastDate | date:'dd.MM.yyyy' }}</mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+        <!-- Min/Max Temperatur -->
+        <div class="main-metric dual-metric" *ngIf="forecastMinTemp !== null && forecastMaxTemp !== null; else loading">
+          <span class="value min">{{ forecastMinTemp }}°</span>
+          <span class="divider">-</span>
+          <span class="value max">{{ forecastMaxTemp }}°</span>
+        </div>
+
+        <!-- Wenn es eine Wetterbeschreibung gibt -->
+        <div class="weather-desc" *ngIf="forecastWeatherDesc">
+          <!-- Die API liefert oft ein Objekt wie {de: 'Sonnig', en: 'Sunny'} -->
+          {{ forecastWeatherDesc?.de || forecastWeatherDesc?.en || forecastWeatherDesc }}
+        </div>
+
+        <!-- Detail-Grid -->
+        <div class="details-grid">
+          <div class="detail-pill highlight" *ngIf="forecastPrecipitationProbability !== null">
+            <span class="icon">☔</span>
+            <div class="info">
+              <span class="label">Regenrisiko</span>
+              <span class="val">{{ forecastPrecipitationProbability }} %</span>
+            </div>
+          </div>
+
+          <div class="detail-pill" *ngIf="forecastSunshineDuration !== null">
+            <span class="icon">☀️</span>
+            <div class="info">
+              <span class="label">Sonne</span>
+              <span class="val">{{ forecastSunshineDuration }} h</span>
+            </div>
+          </div>
+
+          <div class="detail-pill" *ngIf="forecastPrecipitation !== null">
+            <span class="icon">🌧️</span>
+            <div class="info">
+              <span class="label">Niederschlag</span>
+              <span class="val">{{ forecastPrecipitation }} mm</span>
+            </div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+  </div>
+</div>
+
+<!-- Lade-Template -->
+<ng-template #loading>
+  <div class="loading-spinner">
+    Daten werden geladen...
+  </div>
+</ng-template>
