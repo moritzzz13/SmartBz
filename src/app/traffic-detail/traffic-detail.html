@@ -1,11 +1,46 @@
-<div>
-    <h2>{{ data.title }}</h2>
-    <p>{{ data.description }}</p>
+<div class="overlay-backdrop" (click)="onClose()">
+  <!-- Stop Propagation verhindert, dass Klicks in der Karte das Overlay schließen -->
+  <div class="traffic-card" (click)="$event.stopPropagation()">
     
-    <p>{{ data.type }}</p>
-    <p>{{ data.start }}</p>
-    <p>{{ data.end }}</p>
-    <p>{{ data.lat }}</p>
-    <p>{{ data.lng }}</p>
-    <p>{{ data.publishedAt }}</p>
+    <!-- Header -->
+    <header class="card-header" [ngClass]="getTypeClass(data.type)">
+      <div class="header-content">
+        <span class="icon">{{ getTypeIcon(data.type) }}</span>
+        <div class="title-wrapper">
+          <span class="badge">{{ data.type | uppercase }}</span>
+          <h2>{{ data.title }}</h2>
+        </div>
+      </div>
+      <button class="close-btn" (click)="onClose()">&times;</button>
+    </header>
+
+    <!-- Body -->
+    <div class="card-body">
+      <p class="description">{{ data.description }}</p>
+
+      <!-- Details Grid -->
+      <div class="details-grid">
+        <div class="detail-item">
+          <span class="label">Start</span>
+          <span class="value">{{ data.start | date:'dd.MM.yy, HH:mm' }} Uhr</span>
+        </div>
+        <div class="detail-item">
+          <span class="label">Ende</span>
+          <span class="value">{{ data.end | date:'dd.MM.yy, HH:mm' }} Uhr</span>
+        </div>
+        <div class="detail-item full-width">
+          <span class="label">Koordinaten</span>
+          <span class="value location">
+            📍 {{ data.lat | number:'1.4-4' }}, {{ data.lng | number:'1.4-4' }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="card-footer">
+      <small>Gemeldet am: {{ data.publishedAt | date:'dd.MM.yyyy HH:mm' }}</small>
+    </footer>
+
+  </div>
 </div>
