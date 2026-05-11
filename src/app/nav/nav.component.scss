@@ -1,17 +1,258 @@
+// ─────────────────────────────────────────────
+//  Variablen (passend zum Rest der App)
+// ─────────────────────────────────────────────
+$blue-start:  #005c97;
+$blue-end:    #363795;
+$text-dark:   #1e293b;
+$text-muted:  #64748b;
+$surface:     #f8fafc;
+$border:      #e2e8f0;
+
+// ─────────────────────────────────────────────
+//  Container
+// ─────────────────────────────────────────────
 .sidenav-container {
   height: 100%;
 }
 
+// ─────────────────────────────────────────────
+//  Sidenav / Sidebar
+// ─────────────────────────────────────────────
 .sidenav {
-  width: 200px;
+  width: 240px;
+  background: #ffffff;
+  border-right: 1px solid $border;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.05);
 }
 
-.sidenav .mat-toolbar {
-  background: inherit;
+// ─────────────────────────────────────────────
+//  Brand Header (oben in der Sidebar)
+// ─────────────────────────────────────────────
+.brand-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.75rem 1.5rem 1.25rem;
+
+  .brand-logo {
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, $blue-start 0%, $blue-end 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(0, 92, 151, 0.3);
+  }
+
+  .brand-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .brand-name {
+    font-size: 1.15rem;
+    font-weight: 900;
+    letter-spacing: -0.5px;
+    background: linear-gradient(135deg, $blue-start 0%, $blue-end 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-transform: uppercase;
+    line-height: 1;
+  }
+
+  .brand-tagline {
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: $text-muted;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+  }
 }
 
-.mat-toolbar.mat-primary {
+// ─────────────────────────────────────────────
+//  Trennlinie
+// ─────────────────────────────────────────────
+.nav-divider {
+  height: 1px;
+  background: $border;
+  margin: 0.5rem 1.25rem;
+}
+
+// ─────────────────────────────────────────────
+//  Nav Links
+// ─────────────────────────────────────────────
+.nav-list {
+  display: flex;
+  flex-direction: column;
+  padding: 0.75rem 0.75rem;
+  flex: 1;
+  gap: 2px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.7rem 1rem;
+  border-radius: 12px;
+  text-decoration: none;
+  color: $text-dark;
+  font-weight: 600;
+  font-size: 0.9rem;
+  font-family: 'Roboto', sans-serif;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+  position: relative;
+  overflow: hidden;
+
+  .nav-icon {
+    font-size: 1.15rem;
+    flex-shrink: 0;
+    width: 28px;
+    text-align: center;
+  }
+
+  .nav-label {
+    flex: 1;
+  }
+
+  .nav-arrow {
+    font-size: 1.1rem;
+    color: $text-muted;
+    opacity: 0;
+    transform: translateX(-4px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    font-weight: 400;
+  }
+
+  .nav-external {
+    font-size: 0.85rem;
+    color: $text-muted;
+    font-weight: 400;
+  }
+
+  &:hover {
+    background: rgba(0, 92, 151, 0.06);
+    color: $blue-start;
+    transform: translateX(2px);
+
+    .nav-arrow {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  // Aktiver Link
+  &.active {
+    background: linear-gradient(135deg, rgba(0, 92, 151, 0.12) 0%, rgba(54, 55, 149, 0.12) 100%);
+    color: $blue-start;
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 3px;
+      height: 60%;
+      border-radius: 0 3px 3px 0;
+      background: linear-gradient(180deg, $blue-start, $blue-end);
+    }
+
+    .nav-arrow {
+      opacity: 1;
+      transform: translateX(0);
+      color: $blue-start;
+    }
+  }
+
+  // Externer Link
+  &.external {
+    color: $text-muted;
+    font-weight: 500;
+
+    &:hover {
+      color: $blue-start;
+    }
+  }
+}
+
+// ─────────────────────────────────────────────
+//  Sidebar Footer
+// ─────────────────────────────────────────────
+.sidenav-footer {
+  padding: 1rem 1.5rem 1.5rem;
+
+  .footer-text {
+    font-size: 0.7rem;
+    color: $text-muted;
+    font-family: 'Roboto', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 500;
+  }
+}
+
+// ─────────────────────────────────────────────
+//  Top Toolbar
+// ─────────────────────────────────────────────
+.app-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0 1.5rem;
+  height: 64px;
+  background: #ffffff;
+  border-bottom: 1px solid $border;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
   position: sticky;
   top: 0;
-  z-index: 1;
+  z-index: 100;
+
+  .menu-toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: $text-dark;
+    transition: background 0.2s;
+
+    &:hover {
+      background: $surface;
+    }
+  }
+
+  .toolbar-title {
+    font-size: 1.1rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: -0.5px;
+    background: linear-gradient(135deg, $blue-start 0%, $blue-end 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .toolbar-subtitle {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: $text-muted;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+
+    // Auf Desktop ausblenden (nur bei Handset anzeigen)
+    @media (min-width: 600px) {
+      display: none;
+    }
+  }
 }

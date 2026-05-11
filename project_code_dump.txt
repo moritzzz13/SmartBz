@@ -1,0 +1,2462 @@
+================================================================================
+FILE: angular.json
+================================================================================
+
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "cli": {
+    "packageManager": "npm"
+  },
+  "newProjectRoot": "projects",
+  "projects": {
+    "SmartBz": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
+      "root": "",
+      "sourceRoot": "src",
+      "prefix": "sbz",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:application",
+          "options": {
+            "browser": "src/main.ts",
+            "polyfills": [
+              "zone.js"
+            ],
+            "tsConfig": "tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              {
+                "glob": "**/*",
+                "input": "public"
+              }
+            ],
+            "styles": [
+              "src/styles.scss"
+            ]
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kB",
+                  "maximumError": "1MB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "4kB",
+                  "maximumError": "8kB"
+                }
+              ],
+              "outputHashing": "all"
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular/build:dev-server",
+          "configurations": {
+            "production": {
+              "buildTarget": "SmartBz:build:production"
+            },
+            "development": {
+              "buildTarget": "SmartBz:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "test": {
+          "builder": "@angular/build:unit-test"
+        }
+      }
+    }
+  }
+}
+
+
+================================================================================
+FILE: package.json
+================================================================================
+
+{
+  "name": "smart-bz",
+  "version": "0.0.0",
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build",
+    "watch": "ng build --watch --configuration development",
+    "test": "ng test"
+  },
+  "private": true,
+  "packageManager": "npm@10.9.7",
+  "dependencies": {
+    "@angular/cdk": "^21.2.6",
+    "@angular/common": "^21.2.0",
+    "@angular/compiler": "^21.2.0",
+    "@angular/core": "^21.2.0",
+    "@angular/flex-layout": "^15.0.0-beta.42",
+    "@angular/forms": "^21.2.0",
+    "@angular/material": "^21.2.6",
+    "@angular/platform-browser": "^21.2.0",
+    "@angular/router": "^21.2.0",
+    "rxjs": "~7.8.0",
+    "tslib": "^2.3.0",
+    "zone.js": "~0.16.0"
+  },
+  "devDependencies": {
+    "@angular/build": "^21.2.7",
+    "@angular/cli": "^21.2.7",
+    "@angular/compiler-cli": "^21.2.0",
+    "jsdom": "^28.0.0",
+    "prettier": "^3.8.1",
+    "typescript": "~5.9.2",
+    "vitest": "^4.0.8"
+  }
+}
+
+
+================================================================================
+FILE: src\app\app.config.ts
+================================================================================
+
+import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZoneChangeDetection } from '@angular/core';
+import { provideRouter } from '@angular/router';
+
+import { routes } from './app.routes';
+import { provideHttpClient } from '@angular/common/http';
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideBrowserGlobalErrorListeners(),
+    provideZoneChangeDetection({ eventCoalescing: true }),
+    provideRouter(routes),
+    provideHttpClient()
+  ]
+};
+
+
+================================================================================
+FILE: src\app\app.html
+================================================================================
+
+<sbz-nav>
+  <router-outlet></router-outlet>
+</sbz-nav>
+
+================================================================================
+FILE: src\app\app.routes.ts
+================================================================================
+
+import { Routes } from '@angular/router';
+import { Home } from './home/home';
+import { Weather } from './weather/weather';
+import { Traffic } from './traffic/traffic';
+import { Mobility } from './mobility/mobility';
+
+export const routes: Routes = [
+    { path: 'home', component: Home },
+    { path: '', redirectTo: 'home', pathMatch: 'full' },
+    { path: 'weather', component: Weather },
+    { path: 'traffic', component: Traffic},
+    { path: 'mobility', component: Mobility},
+    { path: '**', redirectTo: 'home' }
+];
+
+
+================================================================================
+FILE: src\app\app.scss
+================================================================================
+
+
+
+================================================================================
+FILE: src\app\app.spec.ts
+================================================================================
+
+import { TestBed } from '@angular/core/testing';
+import { App } from './app';
+
+describe('App', () => {
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [App],
+    }).compileComponents();
+  });
+
+  it('should create the app', () => {
+    const fixture = TestBed.createComponent(App);
+    const app = fixture.componentInstance;
+    expect(app).toBeTruthy();
+  });
+
+  it('should render title', () => {
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, SmartBz');
+  });
+});
+
+
+================================================================================
+FILE: src\app\app.ts
+================================================================================
+
+import { Component, signal } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
+import { NavComponent } from "./nav/nav.component";
+
+@Component({
+  selector: 'sbz-root',
+  imports: [RouterOutlet, NavComponent],
+  templateUrl: './app.html',
+  styleUrl: './app.scss'
+})
+export class App {
+  protected readonly title = signal('SmartBz');
+}
+
+
+================================================================================
+FILE: src\app\home\home.html
+================================================================================
+
+<div class="home">
+    <h1>Willkommen bei SmartBz</h1>
+    <h2>Die Digitale Übersicht deiner Stadt!</h2>
+
+    <div>
+        @if(temperature != null) {
+            <mat-card appearance="outlined" (click)="routeToWeather()">
+            <mat-card-header>
+                <mat-card-title>{{temperature}}C &bull; {{ mood }}</mat-card-title>
+                <mat-card-subtitle>Echtzeit-Wetterdaten für Bozen und Umgebung. Bleibe immer auf dem neuesten Stand über Temperatur, Niederschlag und Wetterwarnungen.</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-actions align="end">
+                <button matButton (click)="routeToWeather(); $event.stopPropagation()">Details ansehen</button>
+            </mat-card-actions>
+                </mat-card>
+
+        <mat-card appearance="outlined" (click)="routeToTraffic()">
+            <mat-card-header>
+                <mat-card-title>Verkehr & Mobilität</mat-card-title>
+                <mat-card-subtitle>Aktuelle Verkehrslage, Stauwarnungen und Sperrungen in Bozen. Finde jederzeit die schnellste und sicherste Route durch die Stadt.</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-actions align="end">
+                <button matButton (click)="routeToTraffic(); $event.stopPropagation()">Details ansehen</button>
+            </mat-card-actions>
+        </mat-card>
+        <a href="https://www.suedtirolmobil.info/de/#/" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
+            <mat-card appearance="outlined">
+                <mat-card-header>
+                <mat-card-title>Öffentliche Verkehrsmittel</mat-card-title>
+                <mat-card-subtitle>
+                    Finde jederzeit die schnellste und sicherste Route durch die Stadt. Mit Südtirol Mobil findet jeder sein Öffi!
+                </mat-card-subtitle>
+                </mat-card-header>
+            </mat-card>
+        </a>
+        } @else {
+                    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+                }
+
+    </div>
+</div>
+
+
+================================================================================
+FILE: src\app\home\home.scss
+================================================================================
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.home {
+  padding: 3rem 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  font-family: 'Roboto', sans-serif;
+
+  h1 {
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 900;
+    line-height: 1.1;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(135deg, #005c97 0%, #363795 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-transform: uppercase;
+    letter-spacing: -1px;
+  }
+
+  h2 {
+    font-size: clamp(1.1rem, 2vw, 1.4rem);
+    font-weight: 400;
+    color: #666;
+    margin-bottom: 4rem;
+    border-left: 5px solid #005c97;
+    padding-left: 1rem;
+  }
+
+  > div {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+
+    @media (max-width: 800px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  mat-card {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    border-radius: 20px;
+    background: #ffffff;
+    border: 2px solid transparent;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    animation: fadeUp 0.6s ease-out forwards;
+    opacity: 0;
+    cursor: pointer;
+
+    @for $i from 1 through 10 {
+      &:nth-child(#{$i}) {
+        animation-delay: #{$i * 0.15}s;
+      }
+    }
+
+    &:hover {
+      transform: translateY(-10px) scale(1.02);
+      border-color: #005c97;
+      box-shadow: 0 20px 40px rgba(0, 92, 151, 0.15);
+    }
+
+    mat-card-header {
+      padding-bottom: 1rem;
+    }
+
+    mat-card-title {
+      font-size: 1.6rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: #222;
+    }
+
+    mat-card-subtitle {
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+
+    mat-card-actions {
+      margin-top: auto;
+      padding: 1.5rem;
+
+      button {
+        border-radius: 50px;
+        font-weight: 600;
+        padding: 4px 24px;
+        transition: transform 0.2s, background-color 0.3s;
+
+        &:hover {
+          background-color: rgba(0, 92, 151, 0.08);
+          transform: scale(1.05);
+        }
+      }
+    }
+  }
+}
+
+
+================================================================================
+FILE: src\app\home\home.spec.ts
+================================================================================
+
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+
+import { Home } from './home';
+
+describe('Home', () => {
+  let component: Home;
+  let fixture: ComponentFixture<Home>;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [Home],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(Home);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+});
+
+
+================================================================================
+FILE: src\app\home\home.ts
+================================================================================
+
+import { Component } from '@angular/core';
+import {MatCardModule} from '@angular/material/card';
+import { CdkAriaLive } from "../../../node_modules/@angular/cdk/types/_a11y-module-chunk";
+import { Router } from '@angular/router';
+import { MatButtonModule } from '@angular/material/button';
+import { OpenDataService } from '../open-data-service';
+import {MatSnackBar, MatSnackBarModule} from '@angular/material/snack-bar';
+import {MatProgressBarModule} from '@angular/material/progress-bar';
+
+@Component({
+  selector: 'sbz-home',
+  imports: [MatCardModule, MatButtonModule, MatSnackBarModule, MatProgressBarModule ],
+  templateUrl: './home.html',
+  styleUrl: './home.scss',
+})
+export class Home {
+  temperature: number | null = null;
+  mood!: string;
+
+
+  constructor(
+    private router: Router,
+    private sb: MatSnackBar,
+    private odService: OpenDataService,
+  ) {}
+
+
+  ngOnInit() {
+    this.odService.getRealtimeWeather()
+      .then(ret => {
+        this.temperature = ret.t ? parseFloat(ret.t) : null;;
+
+        if(this.temperature) {
+          if ( this.temperature < 0) {
+          this.mood = "cold";
+        } else if (this.temperature < 10) {
+          this.mood = "cool";
+        } else if (this.temperature < 20) {
+          this.mood = "mild";
+        } else {
+          this.mood = "warm";
+        }
+        }
+
+    })
+      .catch(error => this.odService.showErrorSnackBar(error.message));
+  }
+
+  routeToWeather() {
+    this.router.navigate(['/weather']);
+  }
+
+  routeToTraffic() {
+    this.router.navigate(['/traffic']);
+  }
+}
+
+
+================================================================================
+FILE: src\app\mobility\mobility.html
+================================================================================
+
+<div class="mobility-dashboard">
+  <h1>Mobilität</h1>
+  <h2>Carsharing & Bikesharing in deiner Umgebung</h2>
+
+  <!-- CARSHARING SECTION -->
+  <h3 class="section-title">🚗 Carsharing</h3>
+  @if (carStations === null) {
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  } @else if (carStations.length === 0) {
+    <p class="empty-state">Derzeit keine Carsharing-Stationen gefunden.</p>
+  } @else {
+    <div class="cards-grid">
+      @for (car of carStations; track car.name) {
+        <mat-card class="mobility-card" (click)="openMaps(car.lat, car.lng)">
+          <mat-card-header>
+            <div mat-card-avatar class="card-icon">🚗</div>
+            <mat-card-title>{{ car.name }}</mat-card-title>
+            <mat-card-subtitle>{{ car.company }}</mat-card-subtitle>
+          </mat-card-header>
+
+          <mat-card-content>
+            <div class="status-indicator" [class.available]="car.available">
+              <span class="dot"></span>
+              {{ car.available ? 'Verfügbar' : 'Derzeit nicht verfügbar' }}
+            </div>
+
+            <div class="details-grid">
+              <div class="detail-item">
+                <span class="label">Vorabbuchung</span>
+                <span class="value">{{ car.bookahead }}</span>
+              </div>
+            </div>
+          </mat-card-content>
+
+          <mat-card-actions align="end">
+            <button mat-button (click)="openMaps(car.lat, car.lng); $event.stopPropagation()">
+              Auf Karte zeigen
+            </button>
+          </mat-card-actions>
+        </mat-card>
+      }
+    </div>
+  }
+
+  <!-- BIKESHARING SECTION -->
+  <h3 class="section-title" style="margin-top: 3rem;">🚲 Bikesharing</h3>
+  @if (bikeStations === null) {
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  } @else if (bikeStations.length === 0) {
+    <p class="empty-state">Derzeit keine Bikesharing-Stationen gefunden.</p>
+  } @else {
+    <div class="cards-grid">
+      @for (bike of bikeStations; track bike.code) {
+        <mat-card class="mobility-card" (click)="openMaps(bike.lat, bike.lng)">
+          <mat-card-header>
+            <div mat-card-avatar class="card-icon">🚲</div>
+            <mat-card-title>{{ bike.name }}</mat-card-title>
+            <mat-card-subtitle>{{ bike.municipality }}</mat-card-subtitle>
+          </mat-card-header>
+
+          <mat-card-content>
+            <div class="status-indicator" [class.available]="bike.bikes.length > 0">
+              <span class="dot"></span>
+              {{ bike.bikes.length > 0 ? bike.bikes.length + ' Räder verfügbar' : 'Leer' }}
+            </div>
+
+            <div class="details-grid">
+               <div class="detail-item full-width">
+                 <span class="label">Fahrrad-Typen</span>
+                 <span class="value bike-types" [title]="getUniqueBikeTypes(bike.bikes)">
+                   {{ getUniqueBikeTypes(bike.bikes) }}
+                 </span>
+               </div>
+            </div>
+          </mat-card-content>
+
+          <mat-card-actions align="end">
+            <button mat-button (click)="openMaps(bike.lat, bike.lng); $event.stopPropagation()">
+              Auf Karte zeigen
+            </button>
+          </mat-card-actions>
+        </mat-card>
+      }
+    </div>
+  }
+</div>
+
+
+================================================================================
+FILE: src\app\mobility\mobility.scss
+================================================================================
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.mobility-dashboard {
+  padding: 3rem 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  font-family: 'Roboto', sans-serif;
+
+  h1 {
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 900;
+    line-height: 1.1;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(135deg, #005c97 0%, #363795 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-transform: uppercase;
+    letter-spacing: -1px;
+  }
+
+  h2 {
+    font-size: clamp(1.1rem, 2vw, 1.4rem);
+    font-weight: 400;
+    color: #666;
+    margin-bottom: 3rem;
+    border-left: 5px solid #005c97;
+    padding-left: 1rem;
+  }
+
+  .section-title {
+    font-size: 1.8rem;
+    color: #333;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+  }
+
+  mat-card.mobility-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    border-radius: 16px;
+    background: #ffffff;
+    border: 2px solid transparent !important;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.04) !important;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    animation: fadeUp 0.5s ease-out forwards;
+    opacity: 0;
+    cursor: pointer;
+
+    // Zeitversetzte Animation für die Lade-Optik
+    @for $i from 1 through 20 {
+      &:nth-child(#{$i}) {
+        animation-delay: #{$i * 0.08}s;
+      }
+    }
+
+    &:hover {
+      transform: translateY(-8px);
+      border-color: #005c97 !important;
+      box-shadow: 0 15px 30px rgba(0, 92, 151, 0.12) !important;
+
+      mat-card-title {
+        color: #005c97;
+      }
+    }
+
+    mat-card-header {
+      padding: 1.5rem 1.5rem 0.5rem;
+
+      .card-icon {
+        font-size: 1.8rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f4f7fb;
+        border-radius: 50%;
+        width: 48px;
+        height: 48px;
+        margin-right: 1rem;
+      }
+    }
+
+    mat-card-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #222;
+      line-height: 1.3;
+      margin-bottom: 0.2rem;
+      transition: color 0.3s;
+    }
+
+    mat-card-subtitle {
+      font-size: 0.95rem;
+      color: #666;
+    }
+
+    mat-card-content {
+      padding: 1rem 1.5rem;
+      flex-grow: 1;
+
+      // Anzeige für Verfügbarkeit
+      .status-indicator {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 12px;
+        border-radius: 20px;
+        background: #fef2f2;
+        color: #ef4444;
+        font-weight: 600;
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+
+        .dot {
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          background: #ef4444;
+        }
+
+        &.available {
+          background: #ecfdf5;
+          color: #10b981;
+
+          .dot {
+            background: #10b981;
+          }
+        }
+      }
+
+      // Anzeige für Sub-Eigenschaften (ähnlich wie im Wetter)
+      .details-grid {
+        background: #f8fafc;
+        padding: 12px;
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+
+        .detail-item {
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+
+          &.full-width {
+            grid-column: 1 / -1;
+          }
+
+          .label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: #64748b;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+          }
+
+          .value {
+            font-size: 0.9rem;
+            color: #1e293b;
+            font-weight: 500;
+
+            &.bike-types {
+              white-space: nowrap;
+              overflow: hidden;
+              text-overflow: ellipsis;
+            }
+          }
+        }
+      }
+    }
+
+    mat-card-actions {
+      margin-top: auto;
+      padding: 1rem 1.5rem 1.5rem;
+
+      button {
+        border-radius: 50px;
+        font-weight: 600;
+        color: #005c97;
+        background-color: rgba(0, 92, 151, 0.05);
+        padding: 4px 20px;
+        transition: transform 0.2s, background-color 0.3s, color 0.3s;
+
+        &:hover {
+          background-color: #005c97;
+          color: white;
+          transform: scale(1.05);
+        }
+      }
+    }
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 3rem;
+    color: #666;
+    background: #f8fafc;
+    border-radius: 16px;
+    border: 2px dashed #cbd5e1;
+  }
+}
+
+
+================================================================================
+FILE: src\app\mobility\mobility.spec.ts
+================================================================================
+
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+
+import { Mobility } from './mobility';
+
+describe('Mobility', () => {
+  let component: Mobility;
+  let fixture: ComponentFixture<Mobility>;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [Mobility],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(Mobility);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+});
+
+
+================================================================================
+FILE: src\app\mobility\mobility.ts
+================================================================================
+
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { OpenDataService } from '../open-data-service';
+
+@Component({
+  selector: 'sbz-mobility',
+  standalone: true,
+  imports:[CommonModule, MatCardModule, MatButtonModule, MatProgressBarModule],
+  templateUrl: './mobility.html',
+  styleUrl: './mobility.scss',
+})
+export class Mobility implements OnInit {
+  bikeStations: any[] | null = null;
+  carStations: any[] | null = null;
+
+  constructor(private odService: OpenDataService) {}
+
+  ngOnInit() {
+    this.loadBike();
+    this.loadCar();
+  }
+
+async loadBike() {
+    try {
+      const response = await this.odService.getBikestations();
+      const data = (response && response.data) ? response.data : [];
+
+      const stationsMap = new Map<string, any>();
+
+      data.forEach((item: any) => {
+        if (!item.pcode) return;
+
+        if (!stationsMap.has(item.pcode)) {
+          stationsMap.set(item.pcode, {
+            code: item.pcode,
+            name: item.pname || item.pcode || 'Unbekannte Station',
+            municipality: item.pmetadata?.municipality || 'Unbekannt',
+            lat: item.pcoordinate?.y,
+            lng: item.pcoordinate?.x,
+            active: item.pactive,
+            bikes: []
+          });
+        }
+
+        if (item.savailable) {
+          const station = stationsMap.get(item.pcode);
+          station.bikes.push(item.smetadata?.type || 'Fahrrad');
+        }
+      });
+
+      this.bikeStations = Array.from(stationsMap.values()).sort((a, b) => {
+        const nameA = (a.name || '').toLowerCase();
+        const nameB = (b.name || '').toLowerCase();
+        return nameA.localeCompare(nameB);
+      });
+
+    } catch (error) {
+      console.error("Fehler beim Laden der Fahrräder", error);
+      this.bikeStations = [];
+      this.odService.showErrorSnackBar('Fahrrad-Stationen konnten nicht geladen werden.');
+    }
+  }
+
+  async loadCar() {
+    try {
+      const data = await this.odService.getCarStations();
+
+      this.carStations = data.map((item: any) => ({
+        name: item.sname,
+        available: item.savailable,
+        lat: item.scoordinate?.y,
+        lng: item.scoordinate?.x,
+        company: item.smetadata?.company?.name || item.smetadata?.company || 'Lokaler Anbieter',
+        bookahead: item.smetadata?.bookahead ? 'Ja' : 'Nein'
+      })).sort((a: any, b: any) => a.name.localeCompare(b.name));
+
+    } catch (error) {
+      console.error("Fehler beim Laden der Autos", error);
+      this.carStations =[];
+    }
+  }
+
+  getUniqueBikeTypes(bikes: string[]): string {
+    if (!bikes || bikes.length === 0) return '-';
+    const unique = [...new Set(bikes)];
+    return unique.join(', ');
+  }
+
+  openMaps(lat: number, lng: number) {
+    if (lat && lng) {
+      window.open(`https://www.google.com/maps/search/?api=1&query=${lat},${lng}`, '_blank');
+    }
+  }
+}
+
+
+================================================================================
+FILE: src\app\nav\nav.component.html
+================================================================================
+
+<mat-sidenav-container class="sidenav-container">
+  <mat-sidenav
+    #drawer
+    class="sidenav"
+    fixedInViewport
+    [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
+    [mode]="(isHandset$ | async) ? 'over' : 'side'"
+    [opened]="(isHandset$ | async) === false"
+  >
+    <mat-toolbar>Menu</mat-toolbar>
+    <mat-nav-list>
+      <a mat-list-item routerLink="/home">Home</a>
+      <a mat-list-item routerLink="/weather">Wetter</a>
+      <a mat-list-item routerLink="/traffic">Verkehr</a>
+      <a mat-list-item routerLink="/mobility">Mobility</a>
+      <a mat-list-item href="https://www.suedtirolmobil.info/de/#/" target="_blank" rel="noopener noreferrer">Öffis</a>
+    </mat-nav-list>
+  </mat-sidenav>
+  <mat-sidenav-content>
+    <mat-toolbar color="primary">
+      @if (isHandset$ | async) {
+        <button type="button" aria-label="Toggle sidenav" matIconButton (click)="drawer.toggle()">
+          <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
+        </button>
+      }
+    <span>SmartBz</span>
+    </mat-toolbar>
+
+    <ng-content></ng-content>
+  </mat-sidenav-content>
+</mat-sidenav-container>
+
+
+================================================================================
+FILE: src\app\nav\nav.component.scss
+================================================================================
+
+.sidenav-container {
+  height: 100%;
+}
+
+.sidenav {
+  width: 200px;
+}
+
+.sidenav .mat-toolbar {
+  background: inherit;
+}
+
+.mat-toolbar.mat-primary {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+
+================================================================================
+FILE: src\app\nav\nav.component.spec.ts
+================================================================================
+
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
+
+import { NavComponent } from './nav.component';
+
+describe('NavComponent', () => {
+  let component: NavComponent;
+  let fixture: ComponentFixture<NavComponent>;
+
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      declarations: [NavComponent],
+      imports: [MatButtonModule, MatIconModule, MatListModule, MatSidenavModule, MatToolbarModule],
+    });
+  }));
+
+  beforeEach(() => {
+    fixture = TestBed.createComponent(NavComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('should compile', () => {
+    expect(component).toBeTruthy();
+  });
+});
+
+
+================================================================================
+FILE: src\app\nav\nav.component.ts
+================================================================================
+
+import { Component, inject } from '@angular/core';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { AsyncPipe } from '@angular/common';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatButtonModule } from '@angular/material/button';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatListModule } from '@angular/material/list';
+import { MatIconModule } from '@angular/material/icon';
+import { Observable } from 'rxjs';
+import { map, shareReplay } from 'rxjs/operators';
+import { RouterModule } from '@angular/router';
+
+@Component({
+  selector: 'sbz-nav',
+  templateUrl: './nav.component.html',
+  styleUrl: './nav.component.scss',
+  imports: [
+    MatToolbarModule,
+    MatButtonModule,
+    MatSidenavModule,
+    MatListModule,
+    MatIconModule,
+    AsyncPipe,
+    RouterModule
+  ],
+})
+export class NavComponent {
+  private breakpointObserver = inject(BreakpointObserver);
+
+  isHandset$: Observable<boolean> = this.breakpointObserver.observe(Breakpoints.Handset).pipe(
+    map((result) => result.matches),
+    shareReplay(),
+  );
+}
+
+
+================================================================================
+FILE: src\app\open-data-service.spec.ts
+================================================================================
+
+import { OpenDataService } from './open-data-service';
+
+describe('OpenDataService', () => {
+  it('should create an instance', () => {
+    expect(new OpenDataService()).toBeTruthy();
+  });
+});
+
+
+================================================================================
+FILE: src\app\open-data-service.ts
+================================================================================
+
+import { HttpClient } from "@angular/common/http";
+import { Injectable } from "@angular/core";
+import { MatSnackBar } from "@angular/material/snack-bar";
+import { Observable, lastValueFrom, map } from "rxjs";
+import { TrafficEvent } from "./traffic-event";
+
+const WEATHER_URL ='https://tourism.api.opendatahub.com/v1/Weather';
+const TRAFFIC_URL = 'https://mobility.api.opendatahub.com/v2/flat%2Cevent/%2A/latest?limit=200&offset=0&shownull=false&distinct=true';
+const Bike_URL = 'https://mobility.api.opendatahub.com/v2/flat/Bicycle';
+const Car_URL = 'https://mobility.api.opendatahub.com/v2/flat/CarsharingStation'
+
+
+@Injectable({ providedIn: 'root' })
+export class OpenDataService {
+
+  constructor(
+    private http: HttpClient,
+    private sb: MatSnackBar
+  ) {}
+
+  /**********************************************
+  *                                              *
+  *     WETTER API                               *
+  *                                              *
+  ************************************************/
+
+  getRealtimeWeather(): Promise<any> {
+    return lastValueFrom(this.http.get<any>(`${WEATHER_URL}/Realtime/1242`)
+  );
+  }
+
+  getForecastWeather(): Promise<any> {
+    return lastValueFrom(this.http.get<any>(`${WEATHER_URL}/Forecast/021008`)
+    );
+  }
+
+
+
+
+  /**********************************************
+  *                                              *
+  *     TRAFFIC API                              *
+  *                                              *
+  ************************************************/
+
+
+  getTrafficEvents(): Promise<TrafficEvent[]> {
+    return lastValueFrom(
+      this.http.get<any>(TRAFFIC_URL)
+    ).then(response => {
+
+      const now = new Date();
+
+      return response.data
+        //nur gültige Meldungen
+        /*
+        .filter((ev: any) => {
+          const end = new Date(ev.evend);
+          return end >= now;
+        })
+        */
+
+        //Mapping API → TrafficEvent
+        .map((ev: any) => {
+
+          const coords = ev.evlgeometry?.coordinates;
+
+          return new TrafficEvent(
+            ev.evmetadata?.tycodeValue ?? 'UNKNOWN',
+            ev.evmetadata?.messageStreetWapDescDe
+              ?? ev.evmetadata?.messageStreetInternetDescDe
+              ?? 'Unbekannter Ort',
+            ev.evmetadata?.placeDe ?? 'Keine Beschreibung',
+            new Date(ev.evstart),
+            new Date(ev.evend),
+            coords?.[1] ?? 0,   // lat
+            coords?.[0] ?? 0,   // lng
+            new Date(ev.evmetadata?.publisherDateTime)
+          );
+        })
+
+        //neueste zuerst
+        .sort((a: TrafficEvent, b: TrafficEvent) =>
+          b.publishedAt.getTime() - a.publishedAt.getTime()
+        );
+    });
+  }
+
+
+  /**********************************************
+  *                                              *
+  *     SHARING API                              *
+  *                                              *
+  ************************************************/
+
+  getBikestations(): Promise<any>{
+    return lastValueFrom(this.http.get<any>(`${Bike_URL}`)
+    );
+  }
+
+  async getCarStations(): Promise<any>{
+    const response: any = await lastValueFrom(this.http.get<any>(`${Car_URL}`));
+
+    const bolzanoStations = response.data.filter((station: any) => {
+      const name = station.sname.toLowerCase();
+      return name.includes('bozen') || name.includes('bolzano');
+    });
+
+
+    return bolzanoStations;
+  }
+
+
+
+  /**********************************************
+  *                                              *
+  *     HILFSMETHODEN                            *
+  *                                              *
+  ************************************************/
+
+
+  showErrorSnackBar(error: string) {
+    this.sb.open(
+      `Verbindung zur OpenData-API fehlgeschlagen: ${error}`,
+      'OK',
+      {
+        duration: 5000,
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+      }
+    );
+  }
+}
+
+
+================================================================================
+FILE: src\app\traffic\traffic.html
+================================================================================
+
+<div class="traffic-dashboard">
+    @if(allTrafficEvents != null) {
+
+        <div class="controls">
+            <mat-checkbox type="checkbox" [(ngModel)]="showValid">
+                Nur aktuelle Verkehrsmeldungen anzeigen
+            </mat-checkbox>
+        </div>
+
+        <div class="traffic-grid">
+            @if(!showValid) {
+                @for(e of allTrafficEvents; track e.title) {
+                    <mat-card appearance="outlined" (click)="openTrafficDetail(e)">
+                        <mat-card-header>
+                            <mat-card-title>{{e.title}}</mat-card-title>
+                            <mat-card-subtitle>{{ e.description }}</mat-card-subtitle>
+                        </mat-card-header>
+                        <mat-card-actions align="end">
+                            <button matButton (click)="openTrafficDetail(e); $event.stopPropagation()">Details ansehen</button>
+                        </mat-card-actions>
+                    </mat-card>
+                }
+            } @else {
+                @for(e of validTrafficEvents; track e.title) {
+                    <mat-card appearance="outlined" (click)="openTrafficDetail(e)">
+                        <mat-card-header>
+                            <mat-card-title>{{e.title}}</mat-card-title>
+                            <mat-card-subtitle>{{ e.description }}</mat-card-subtitle>
+                        </mat-card-header>
+                        <mat-card-actions align="end">
+                            <button matButton (click)="openTrafficDetail(e); $event.stopPropagation()">Details ansehen</button>
+                        </mat-card-actions>
+                    </mat-card>
+                } @empty {
+                    <div class="empty-state">
+                        <span class="icon"></span>
+                        <p>Zurzeit liegen keine Verkehrsmeldungen vor. Gute Fahrt!</p>
+                    </div>
+                }
+            }
+        </div>
+
+    } @else {
+        <div class="loading-state">
+            <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+            <p>Verkehrsdaten werden geladen...</p>
+        </div>
+    }
+</div>
+
+
+================================================================================
+FILE: src\app\traffic\traffic.scss
+================================================================================
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.traffic-dashboard {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  font-family: 'Roboto', sans-serif;
+
+  // Bereich für die Checkbox oben
+  .controls {
+    margin-bottom: 2rem;
+    padding: 1rem 1.5rem;
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+    display: inline-block; // Damit der Kasten nur so groß ist wie der Text
+    animation: fadeUp 0.5s ease-out forwards;
+
+    ::ng-deep .mdc-form-field {
+      font-weight: 500;
+      color: #333;
+    }
+
+    // Checkbox-Farbe anpassen (passend zum blauen Theme)
+    ::ng-deep .mdc-checkbox__native-control:checked ~ .mdc-checkbox__background {
+      background-color: #005c97 !important;
+      border-color: #005c97 !important;
+    }
+  }
+
+  // Das Grid für die Verkehrskarten
+  .traffic-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+  }
+
+  mat-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    border-radius: 16px;
+    background: #ffffff;
+    border: 2px solid transparent !important; // Überschreibt appearance="outlined" Standard
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.04) !important;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    animation: fadeUp 0.5s ease-out forwards;
+    opacity: 0;
+    cursor: pointer;
+
+    // Verzögerte Animation für die einzelnen Karten (wie beim Wetter)
+    @for $i from 1 through 20 {
+      &:nth-child(#{$i}) {
+        animation-delay: #{$i * 0.08}s;
+      }
+    }
+
+    &:hover {
+      transform: translateY(-8px);
+      border-color: #005c97 !important;
+      box-shadow: 0 15px 30px rgba(0, 92, 151, 0.12) !important;
+
+      mat-card-title {
+        color: #005c97;
+      }
+    }
+
+    mat-card-header {
+      padding: 1.5rem 1.5rem 0.5rem;
+    }
+
+    mat-card-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #222;
+      line-height: 1.3;
+      margin-bottom: 0.5rem;
+      transition: color 0.3s;
+    }
+
+    mat-card-subtitle {
+      font-size: 0.95rem;
+      line-height: 1.5;
+      color: #666;
+
+      // Text abschneiden, wenn er zu lang ist (max 3 Zeilen)
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    mat-card-actions {
+      margin-top: auto;
+      padding: 1rem 1.5rem 1.5rem;
+
+      button {
+        border-radius: 50px;
+        font-weight: 600;
+        color: #005c97;
+        background-color: rgba(0, 92, 151, 0.05);
+        padding: 4px 20px;
+        transition: transform 0.2s, background-color 0.3s, color 0.3s;
+
+        &:hover {
+          background-color: #005c97;
+          color: white;
+          transform: scale(1.05);
+        }
+      }
+    }
+  }
+
+  // Design für den Zustand "Keine Meldungen"
+  .empty-state {
+    grid-column: 1 / -1; // Nimmt die ganze Breite ein
+    text-align: center;
+    padding: 4rem 2rem;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 20px;
+    border: 2px dashed #ccc;
+    animation: fadeUp 0.5s ease forwards;
+
+    .icon {
+      font-size: 3rem;
+      display: block;
+      margin-bottom: 1rem;
+    }
+
+    p {
+      font-size: 1.2rem;
+      color: #666;
+      font-weight: 500;
+    }
+  }
+
+  // Design für den Ladebalken
+  .loading-state {
+    margin-top: 2rem;
+    animation: fadeUp 0.5s ease forwards;
+
+    mat-progress-bar {
+      border-radius: 4px;
+
+      ::ng-deep .mdc-linear-progress__bar-inner {
+        border-color: #005c97 !important; // Blauer Ladebalken
+      }
+    }
+
+    p {
+      text-align: center;
+      margin-top: 1rem;
+      color: #777;
+      font-weight: 500;
+      font-style: italic;
+    }
+  }
+}
+
+
+================================================================================
+FILE: src\app\traffic\traffic.spec.ts
+================================================================================
+
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+
+import { Traffic } from './traffic';
+
+describe('Traffic', () => {
+  let component: Traffic;
+  let fixture: ComponentFixture<Traffic>;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [Traffic],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(Traffic);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+});
+
+
+================================================================================
+FILE: src\app\traffic\traffic.ts
+================================================================================
+
+import { Component, inject } from '@angular/core';
+import { OpenDataService } from '../open-data-service';
+import { TrafficEvent } from '../traffic-event';
+import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { FormsModule, NgModel } from '@angular/forms';
+import {MatCheckboxModule} from '@angular/material/checkbox';
+import { TrafficDetail } from '../traffic-detail/traffic-detail';
+import {MatDialog, MatDialogModule} from '@angular/material/dialog';
+
+@Component({
+  selector: 'sbz-traffic',
+  imports: [ MatCardModule, MatButtonModule, MatProgressBarModule, FormsModule, MatCheckboxModule, MatDialogModule ],
+  templateUrl: './traffic.html',
+  styleUrl: './traffic.scss',
+})
+export class Traffic {
+
+  validTrafficEvents!: TrafficEvent[];
+  allTrafficEvents!: TrafficEvent[];
+  showValid: boolean = false;
+
+  readonly dialog = inject(MatDialog);
+
+  constructor(
+    private odService: OpenDataService,
+  ) {}
+
+
+  ngOnInit() { 
+    this.odService.getTrafficEvents()
+      .then(result => {
+        this.allTrafficEvents = result;
+
+        //soriteren nach nur valid TrafficEvents
+        const now = new Date();
+        this.validTrafficEvents = this.allTrafficEvents
+          .filter((ev: any) => {
+            const end = new Date(ev.evend);
+            return end >= now;
+        })
+      })
+      .catch(error => this.odService.showErrorSnackBar(error))
+  }
+
+
+  openTrafficDetail(e: TrafficEvent) {
+    const dialogRef = this.dialog.open(TrafficDetail, {data: e})
+    //TODO: dialogfenster erstellen für trafficDetail
+  }
+}
+
+
+================================================================================
+FILE: src\app\traffic-detail\traffic-detail.html
+================================================================================
+
+<div class="overlay-backdrop" (click)="onClose()">
+  <!-- Stop Propagation verhindert, dass Klicks in der Karte das Overlay schließen -->
+  <div class="traffic-card" (click)="$event.stopPropagation()">
+    
+    <!-- Header -->
+    <header class="card-header" [ngClass]="getTypeClass(data.type)">
+      <div class="header-content">
+        <span class="icon">{{ getTypeIcon(data.type) }}</span>
+        <div class="title-wrapper">
+          <span class="badge">{{ data.type | uppercase }}</span>
+          <h2>{{ data.title }}</h2>
+        </div>
+      </div>
+      <button class="close-btn" (click)="onClose()">&times;</button>
+    </header>
+
+    <!-- Body -->
+    <div class="card-body">
+      <p class="description">{{ data.description }}</p>
+
+      <!-- Details Grid -->
+      <div class="details-grid">
+        <div class="detail-item">
+          <span class="label">Start</span>
+          <span class="value">{{ data.start | date:'dd.MM.yy, HH:mm' }} Uhr</span>
+        </div>
+        <div class="detail-item">
+          <span class="label">Ende</span>
+          <span class="value">{{ data.end | date:'dd.MM.yy, HH:mm' }} Uhr</span>
+        </div>
+        <div class="detail-item full-width">
+          <span class="label">Koordinaten</span>
+          <span class="value location">
+            📍 {{ data.lat | number:'1.4-4' }}, {{ data.lng | number:'1.4-4' }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="card-footer">
+      <small>Gemeldet am: {{ data.publishedAt | date:'dd.MM.yyyy HH:mm' }}</small>
+    </footer>
+
+  </div>
+</div>
+
+================================================================================
+FILE: src\app\traffic-detail\traffic-detail.scss
+================================================================================
+
+// Variablen für die dynamischen Farben
+$danger: #ef4444;
+$warning: #f59e0b;
+$alert: #eab308;
+$info: #3b82f6;
+$text-dark: #1e293b;
+$text-light: #64748b;
+
+.overlay-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.traffic-card {
+  background: #ffffff;
+  width: 90%;
+  max-width: 450px;
+  border-radius: 16px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+  animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+
+  .card-header {
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    color: white;
+
+    // Dynamische Klassen aus TypeScript
+    &.type-danger { background: linear-gradient(135deg, $danger, darken($danger, 10%)); }
+    &.type-warning { background: linear-gradient(135deg, $warning, darken($warning, 10%)); }
+    &.type-alert { background: linear-gradient(135deg, $alert, darken($alert, 10%)); }
+    &.type-info { background: linear-gradient(135deg, $info, darken($info, 10%)); }
+
+    .header-content {
+      display: flex;
+      gap: 12px;
+
+      .icon {
+        font-size: 2rem;
+        background: rgba(255, 255, 255, 0.2);
+        padding: 8px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .title-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+
+        .badge {
+          align-self: flex-start;
+          font-size: 0.7rem;
+          font-weight: 700;
+          letter-spacing: 0.5px;
+          background: rgba(255, 255, 255, 0.9);
+          color: $text-dark;
+          padding: 2px 8px;
+          border-radius: 12px;
+        }
+
+        h2 {
+          margin: 0;
+          font-size: 1.25rem;
+          font-weight: 600;
+          line-height: 1.3;
+        }
+      }
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.8rem;
+      cursor: pointer;
+      opacity: 0.8;
+      transition: opacity 0.2s;
+      line-height: 1;
+      padding: 0;
+
+      &:hover {
+        opacity: 1;
+      }
+    }
+  }
+
+  .card-body {
+    padding: 20px;
+
+    .description {
+      color: $text-dark;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      margin-top: 0;
+      margin-bottom: 20px;
+    }
+
+    .details-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      background: #f8fafc;
+      padding: 16px;
+      border-radius: 12px;
+      border: 1px solid #e2e8f0;
+
+      .detail-item {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+
+        &.full-width {
+          grid-column: 1 / -1;
+        }
+
+        .label {
+          font-size: 0.75rem;
+          text-transform: uppercase;
+          color: $text-light;
+          font-weight: 600;
+          letter-spacing: 0.5px;
+        }
+
+        .value {
+          font-size: 0.9rem;
+          color: $text-dark;
+          font-weight: 500;
+
+          &.location {
+            font-family: monospace;
+            background: #e2e8f0;
+            padding: 4px 8px;
+            border-radius: 6px;
+            display: inline-block;
+          }
+        }
+      }
+    }
+  }
+
+  .card-footer {
+    padding: 12px 20px;
+    background: #f1f5f9;
+    border-top: 1px solid #e2e8f0;
+    text-align: right;
+    
+    small {
+      color: $text-light;
+      font-size: 0.8rem;
+    }
+  }
+}
+
+// Animationen
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { 
+    opacity: 0; 
+    transform: translateY(30px) scale(0.95); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0) scale(1); 
+  }
+}
+
+================================================================================
+FILE: src\app\traffic-detail\traffic-detail.spec.ts
+================================================================================
+
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+
+import { TrafficDetail } from './traffic-detail';
+
+describe('TrafficDetail', () => {
+  let component: TrafficDetail;
+  let fixture: ComponentFixture<TrafficDetail>;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [TrafficDetail],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(TrafficDetail);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+});
+
+
+================================================================================
+FILE: src\app\traffic-detail\traffic-detail.ts
+================================================================================
+
+import { Component, Inject } from '@angular/core';
+import { CommonModule } from '@angular/common'; // Wichtig für ngClass und die Pipes (Date, Number, etc.)
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { TrafficEvent } from '../traffic-event';
+
+@Component({
+  selector: 'sbz-traffic-detail',
+  standalone: true,
+  imports: [CommonModule], // Hier CommonModule einfügen, damit das HTML funktioniert!
+  templateUrl: './traffic-detail.html',
+  styleUrl: './traffic-detail.scss',
+})
+export class TrafficDetail {
+
+  constructor(
+    @Inject(MAT_DIALOG_DATA) public data: TrafficEvent,
+    private dialogRef: MatDialogRef<TrafficDetail> // Erlaubt es uns, den Dialog per Code zu schließen
+  ) {}
+
+  // Gibt eine dynamische Farbe/Klasse basierend auf dem Typ zurück
+  getTypeClass(type: string): string {
+    if (!type) return 'type-info';
+    
+    const t = type.toLowerCase();
+    if (t.includes('unfall') || t.includes('accident')) return 'type-danger';
+    if (t.includes('baustelle') || t.includes('construction') || t.includes('roadwork')) return 'type-warning';
+    if (t.includes('stau') || t.includes('jam')) return 'type-alert';
+    
+    return 'type-info';
+  }
+
+  // Gibt ein passendes Icon (Emoji) zurück
+  getTypeIcon(type: string): string {
+    if (!type) return 'ℹ️';
+    
+    const t = type.toLowerCase();
+    if (t.includes('unfall') || t.includes('accident')) return '💥';
+    if (t.includes('baustelle') || t.includes('construction') || t.includes('roadwork')) return '🚧';
+    if (t.includes('stau') || t.includes('jam')) return '🚗';
+    
+    return 'ℹ️';
+  }
+
+  // Wird aufgerufen, wenn auf das "X" geklickt wird
+  onClose(): void {
+    this.dialogRef.close();
+  }
+}
+
+================================================================================
+FILE: src\app\traffic-event.spec.ts
+================================================================================
+
+import { TrafficEvent } from './traffic-event';
+
+describe('TrafficEvent', () => {
+  it('should create an instance', () => {
+    expect(new TrafficEvent()).toBeTruthy();
+  });
+});
+
+
+================================================================================
+FILE: src\app\traffic-event.ts
+================================================================================
+
+export class TrafficEvent {
+    constructor(
+        public type: string,            // RADAR, ROADWORKS, ...
+        public title: string,          // Straße / Ort
+        public description: string,     // placeDe / placeIt
+        public start: Date,
+        public end: Date,
+        public lat: number,
+        public lng: number,
+        public publishedAt: Date
+    ) {}
+}
+
+
+================================================================================
+FILE: src\app\weather\weather.html
+================================================================================
+
+<div class="weather-dashboard">
+  <!-- Header Bereich -->
+  <h1>Wetterstation & Vorhersage</h1>
+  <h2>Live-Daten und Aussichten für Südtirol</h2>
+
+  <div class="cards-grid">
+
+    <!-- KARTE 1: AKTUELLES WETTER -->
+    <mat-card class="weather-card">
+      <mat-card-header>
+        <mat-card-title>Aktuell</mat-card-title>
+        <mat-card-subtitle>Live-Messwerte</mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+        <!-- Große Temperatur-Anzeige -->
+        <div class="main-metric" *ngIf="temperature !== null; else loading">
+          <span class="value">{{ temperature }}</span>
+          <span class="unit">°C</span>
+        </div>
+
+        <!-- Detail-Grid -->
+        <div class="details-grid">
+          <div class="detail-pill" *ngIf="luftfeuchtigkeit !== null">
+            <span class="icon">💧</span>
+            <div class="info">
+              <span class="label">Feuchtigkeit</span>
+              <span class="val">{{ luftfeuchtigkeit }} %</span>
+            </div>
+          </div>
+
+          <div class="detail-pill" *ngIf="pressure !== null">
+            <span class="icon">⏱️</span>
+            <div class="info">
+              <span class="label">Luftdruck</span>
+              <span class="val">{{ pressure }} hPa</span>
+            </div>
+          </div>
+
+          <div class="detail-pill" *ngIf="flowrate !== null">
+            <span class="icon">🌧️</span>
+            <div class="info">
+              <span class="label">Niederschlag</span>
+              <span class="val">{{ flowrate }} mm</span>
+            </div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- KARTE 2: VORHERSAGE -->
+    <mat-card class="weather-card">
+      <mat-card-header>
+        <mat-card-title>Vorhersage</mat-card-title>
+        <!-- Datum formatieren (z.B. 12.04.2026) -->
+        <mat-card-subtitle *ngIf="forecastDate">{{ forecastDate | date:'dd.MM.yyyy' }}</mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+        <!-- Min/Max Temperatur -->
+        <div class="main-metric dual-metric" *ngIf="forecastMinTemp !== null && forecastMaxTemp !== null; else loading">
+          <span class="value min">{{ forecastMinTemp }}°</span>
+          <span class="divider">-</span>
+          <span class="value max">{{ forecastMaxTemp }}°</span>
+        </div>
+
+        <!-- Wenn es eine Wetterbeschreibung gibt -->
+        <div class="weather-desc" *ngIf="forecastWeatherDesc">
+          <!-- Die API liefert oft ein Objekt wie {de: 'Sonnig', en: 'Sunny'} -->
+          {{ forecastWeatherDesc?.de || forecastWeatherDesc?.en || forecastWeatherDesc }}
+        </div>
+
+        <!-- Detail-Grid -->
+        <div class="details-grid">
+          <div class="detail-pill highlight" *ngIf="forecastPrecipitationProbability !== null">
+            <span class="icon">☔</span>
+            <div class="info">
+              <span class="label">Regenrisiko</span>
+              <span class="val">{{ forecastPrecipitationProbability }} %</span>
+            </div>
+          </div>
+
+          <div class="detail-pill" *ngIf="forecastSunshineDuration !== null">
+            <span class="icon">☀️</span>
+            <div class="info">
+              <span class="label">Sonne</span>
+              <span class="val">{{ forecastSunshineDuration }} h</span>
+            </div>
+          </div>
+
+          <div class="detail-pill" *ngIf="forecastPrecipitation !== null">
+            <span class="icon">🌧️</span>
+            <div class="info">
+              <span class="label">Niederschlag</span>
+              <span class="val">{{ forecastPrecipitation }} mm</span>
+            </div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+  </div>
+</div>
+
+<!-- Lade-Template -->
+<ng-template #loading>
+  <div class="loading-spinner">
+    Daten werden geladen...
+  </div>
+</ng-template>
+
+
+================================================================================
+FILE: src\app\weather\weather.scss
+================================================================================
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.weather-dashboard {
+  padding: 3rem 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  font-family: 'Roboto', sans-serif;
+
+  // Header Styling (aus deinem Entwurf)
+  h1 {
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 900;
+    line-height: 1.1;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(135deg, #005c97 0%, #363795 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-transform: uppercase;
+    letter-spacing: -1px;
+  }
+
+  h2 {
+    font-size: clamp(1.1rem, 2vw, 1.4rem);
+    font-weight: 400;
+    color: #666;
+    margin-bottom: 4rem;
+    border-left: 5px solid #005c97;
+    padding-left: 1rem;
+  }
+
+  // Das Grid für die zwei Karten
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 2.5rem;
+  }
+
+  // Karten Styling (aus deinem Entwurf + Anpassungen)
+  mat-card.weather-card {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    border-radius: 20px;
+    background: #ffffff;
+    border: 2px solid transparent;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    animation: fadeUp 0.6s ease-out forwards;
+    opacity: 0;
+    padding: 1rem;
+
+    // Verzögerte Animation für die Karten
+    @for $i from 1 through 10 {
+      &:nth-child(#{$i}) {
+        animation-delay: #{$i * 0.15}s;
+      }
+    }
+
+    &:hover {
+      transform: translateY(-10px) scale(1.02);
+      border-color: #005c97;
+      box-shadow: 0 20px 40px rgba(0, 92, 151, 0.15);
+    }
+
+    mat-card-header {
+      padding-bottom: 1rem;
+    }
+
+    mat-card-title {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: #222;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    mat-card-subtitle {
+      font-size: 1.1rem;
+      color: #777;
+      font-weight: 500;
+    }
+  }
+
+  // INNENLEBEN DER KARTEN (NEU)
+
+  // Die riesige Haupt-Zahl
+  .main-metric {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    margin: 2rem 0 3rem;
+
+    .value {
+      font-size: 5rem;
+      font-weight: 900;
+      line-height: 1;
+      background: linear-gradient(135deg, #005c97 0%, #363795 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -3px;
+    }
+
+    .unit {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #666;
+      margin-left: 0.5rem;
+    }
+
+    // Für Vorhersage (Min - Max)
+    &.dual-metric {
+      .value { font-size: 3.5rem; letter-spacing: -2px; }
+      .min { color: #555; background: none; -webkit-text-fill-color: #555; }
+      .divider { font-size: 2rem; color: #ccc; margin: 0 1rem; }
+    }
+  }
+
+  .weather-desc {
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #005c97;
+    margin-top: -1.5rem;
+    margin-bottom: 2rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  // Detail Boxen (Luftdruck, Feuchtigkeit etc.)
+  .details-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 1rem;
+    margin-top: auto; // Drückt es nach unten
+  }
+
+  .detail-pill {
+    background: #f4f7fb;
+    border-radius: 16px;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: background 0.3s;
+
+    &:hover {
+      background: #e6eef5;
+    }
+
+    &.highlight {
+      background: rgba(0, 92, 151, 0.1);
+      border: 1px solid rgba(0, 92, 151, 0.2);
+    }
+
+    .icon {
+      font-size: 1.5rem;
+    }
+
+    .info {
+      display: flex;
+      flex-direction: column;
+
+      .label {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        color: #888;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+      }
+
+      .val {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #222;
+      }
+    }
+  }
+
+  .loading-spinner {
+    text-align: center;
+    padding: 3rem;
+    color: #888;
+    font-style: italic;
+  }
+}
+
+
+================================================================================
+FILE: src\app\weather\weather.spec.ts
+================================================================================
+
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+
+import { Weather } from './weather';
+
+describe('Weather', () => {
+  let component: Weather;
+  let fixture: ComponentFixture<Weather>;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [Weather],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(Weather);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+});
+
+
+================================================================================
+FILE: src\app\weather\weather.ts
+================================================================================
+
+import { DatePipe } from '@angular/common';
+import { OpenDataService } from './../open-data-service';
+import { Component } from '@angular/core';
+import {MatCardModule} from '@angular/material/card';
+import { CommonModule } from '@angular/common';
+
+@Component({
+  selector: 'sbz-weather',
+  imports: [MatCardModule, DatePipe, CommonModule],
+  templateUrl: './weather.html',
+  styleUrl: './weather.scss',
+})
+export class Weather {
+
+  temperature: number | null = null;
+  luftfeuchtigkeit: number | null = null;
+  pressure: number | null = null;
+  flowrate: number | null = null;
+
+  forecastDate: string | null = null;
+  forecastMinTemp: number | null = null;
+  forecastMaxTemp: number | null = null;
+  forecastSunshineDuration: number | null = null;
+  forecastPrecipitationProbability: number | null = null;
+  forecastPrecipitation: number | null = null;
+  forecastWeatherDesc: any = null;
+
+  constructor(private odService: OpenDataService){}
+
+  ngOnInit(){
+    this.loadWeather();
+    this.loadWeatherForecast();
+  }
+
+  async loadWeather(){
+    try{
+      const allData = await this.odService.getRealtimeWeather();
+
+      if(allData){
+        this.temperature = allData.t ? parseFloat(allData.t) : null;
+        this.luftfeuchtigkeit = allData.rh ? parseFloat(allData.rh) : null;
+        this.pressure = allData.p ? parseFloat(allData.p) : null;
+        this.flowrate = allData.n ? parseFloat(allData.n) : null;
+
+        if(typeof this.flowrate === "number" && !Number.isNaN(this.temperature)){}
+      }
+    }catch(error){
+      console.error(error);
+    }
+  }
+
+  async loadWeatherForecast(){
+    try{
+      const allData = await this.odService.getForecastWeather();
+
+      console.log("Daten erhalten", allData);
+
+  if (allData && allData.ForeCastDaily && allData.ForeCastDaily.length > 1) {
+
+    const tomorrowData = allData.ForeCastDaily[2];
+
+    this.forecastDate = tomorrowData.Date ? tomorrowData.Date : null;
+
+    this.forecastMinTemp = tomorrowData.MinTemp ?? null;
+    this.forecastMaxTemp = tomorrowData.MaxTemp ?? null;
+    this.forecastSunshineDuration = tomorrowData.SunshineDuration ?? null;
+    this.forecastPrecipitationProbability = tomorrowData.PrecipitationProbability ?? null;
+
+    this.forecastPrecipitation = tomorrowData.Precipitation ?? null;
+
+    this.forecastWeatherDesc = tomorrowData.WeatherDescription ?? null;
+
+  }
+
+    }catch(error){
+      console.error(error);
+    }
+  }
+}
+
+
+================================================================================
+FILE: src\index.html
+================================================================================
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>SmartBz</title>
+    <base href="/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+  </head>
+  <body>
+    <sbz-root></sbz-root>
+  </body>
+</html>
+
+
+================================================================================
+FILE: src\main.ts
+================================================================================
+
+import { bootstrapApplication } from '@angular/platform-browser';
+import { appConfig } from './app/app.config';
+import { App } from './app/app';
+
+bootstrapApplication(App, appConfig)
+  .catch((err) => console.error(err));
+
+
+================================================================================
+FILE: src\styles.scss
+================================================================================
+
+// Include theming for Angular Material with `mat.theme()`.
+// This Sass mixin will define CSS variables that are used for styling Angular Material
+// components according to the Material 3 design spec.
+// Learn more about theming and how to use it for your application's
+// custom components at https://material.angular.dev/guide/theming
+@use '@angular/material' as mat;
+
+html {
+  height: 100%;
+  @include mat.theme(
+    (
+      color: (
+        primary: mat.$azure-palette,
+        tertiary: mat.$blue-palette,
+      ),
+      typography: Roboto,
+      density: 0,
+    )
+  );
+}
+
+body {
+  // Default the application to a light color theme. This can be changed to
+  // `dark` to enable the dark color theme, or to `light dark` to defer to the
+  // user's system settings.
+  color-scheme: light;
+
+  // Set a default background, font and text colors for the application using
+  // Angular Material's system-level CSS variables. Learn more about these
+  // variables at https://material.angular.dev/guide/system-variables
+  background-color: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
+  font: var(--mat-sys-body-medium);
+
+  // Reset the user agent margin.
+  margin: 0;
+  height: 100%;
+}
+/* You can add global styles to this file, and also import other style files */
+
+
+================================================================================
+FILE: tsconfig.app.json
+================================================================================
+
+/* To learn more about Typescript configuration file: https://www.typescriptlang.org/docs/handbook/tsconfig-json.html. */
+/* To learn more about Angular compiler options: https://angular.dev/reference/configs/angular-compiler-options. */
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./out-tsc/app",
+    "types": []
+  },
+  "include": [
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "src/**/*.spec.ts"
+  ]
+}
+
+
+================================================================================
+FILE: tsconfig.json
+================================================================================
+
+/* To learn more about Typescript configuration file: https://www.typescriptlang.org/docs/handbook/tsconfig-json.html. */
+/* To learn more about Angular compiler options: https://angular.dev/reference/configs/angular-compiler-options. */
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "strict": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "skipLibCheck": true,
+    "isolatedModules": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "target": "ES2022",
+    "module": "preserve"
+  },
+  "angularCompilerOptions": {
+    "enableI18nLegacyMessageIdFormat": false,
+    "strictInjectionParameters": true,
+    "strictInputAccessModifiers": true,
+    "strictTemplates": true
+  },
+  "files": [],
+  "references": [
+    {
+      "path": "./tsconfig.app.json"
+    },
+    {
+      "path": "./tsconfig.spec.json"
+    }
+  ]
+}
+
+
+================================================================================
+FILE: tsconfig.spec.json
+================================================================================
+
+/* To learn more about Typescript configuration file: https://www.typescriptlang.org/docs/handbook/tsconfig-json.html. */
+/* To learn more about Angular compiler options: https://angular.dev/reference/configs/angular-compiler-options. */
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./out-tsc/spec",
+    "types": [
+      "vitest/globals"
+    ]
+  },
+  "include": [
+    "src/**/*.d.ts",
+    "src/**/*.spec.ts"
+  ]
+}
+
+

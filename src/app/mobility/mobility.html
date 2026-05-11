@@ -1,0 +1,86 @@
+<div class="mobility-dashboard">
+  <h1>Mobilität</h1>
+  <h2>Carsharing & Bikesharing in deiner Umgebung</h2>
+
+  <!-- CARSHARING SECTION -->
+  <h3 class="section-title">🚗 Carsharing</h3>
+  @if (carStations === null) {
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  } @else if (carStations.length === 0) {
+    <p class="empty-state">Derzeit keine Carsharing-Stationen gefunden.</p>
+  } @else {
+    <div class="cards-grid">
+      @for (car of carStations; track car.name) {
+        <mat-card class="mobility-card" (click)="openMaps(car.lat, car.lng)">
+          <mat-card-header>
+            <div mat-card-avatar class="card-icon">🚗</div>
+            <mat-card-title>{{ car.name }}</mat-card-title>
+            <mat-card-subtitle>{{ car.company }}</mat-card-subtitle>
+          </mat-card-header>
+
+          <mat-card-content>
+            <div class="status-indicator" [class.available]="car.available">
+              <span class="dot"></span>
+              {{ car.available ? 'Verfügbar' : 'Derzeit nicht verfügbar' }}
+            </div>
+
+            <div class="details-grid">
+              <div class="detail-item">
+                <span class="label">Vorabbuchung</span>
+                <span class="value">{{ car.bookahead }}</span>
+              </div>
+            </div>
+          </mat-card-content>
+
+          <mat-card-actions align="end">
+            <button mat-button (click)="openMaps(car.lat, car.lng); $event.stopPropagation()">
+              Auf Karte zeigen
+            </button>
+          </mat-card-actions>
+        </mat-card>
+      }
+    </div>
+  }
+
+  <!-- BIKESHARING SECTION -->
+  <h3 class="section-title" style="margin-top: 3rem;">🚲 Bikesharing</h3>
+  @if (bikeStations === null) {
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  } @else if (bikeStations.length === 0) {
+    <p class="empty-state">Derzeit keine Bikesharing-Stationen gefunden.</p>
+  } @else {
+    <div class="cards-grid">
+      @for (bike of bikeStations; track bike.code) {
+        <mat-card class="mobility-card" (click)="openMaps(bike.lat, bike.lng)">
+          <mat-card-header>
+            <div mat-card-avatar class="card-icon">🚲</div>
+            <mat-card-title>{{ bike.name }}</mat-card-title>
+            <mat-card-subtitle>{{ bike.municipality }}</mat-card-subtitle>
+          </mat-card-header>
+
+          <mat-card-content>
+            <div class="status-indicator" [class.available]="bike.bikes.length > 0">
+              <span class="dot"></span>
+              {{ bike.bikes.length > 0 ? bike.bikes.length + ' Räder verfügbar' : 'Leer' }}
+            </div>
+
+            <div class="details-grid">
+               <div class="detail-item full-width">
+                 <span class="label">Fahrrad-Typen</span>
+                 <span class="value bike-types" [title]="getUniqueBikeTypes(bike.bikes)">
+                   {{ getUniqueBikeTypes(bike.bikes) }}
+                 </span>
+               </div>
+            </div>
+          </mat-card-content>
+
+          <mat-card-actions align="end">
+            <button mat-button (click)="openMaps(bike.lat, bike.lng); $event.stopPropagation()">
+              Auf Karte zeigen
+            </button>
+          </mat-card-actions>
+        </mat-card>
+      }
+    </div>
+  }
+</div>

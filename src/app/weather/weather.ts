@@ -68,7 +68,7 @@ export class Weather {
 
     this.forecastPrecipitation = tomorrowData.Precipitation ?? null;
 
-    this.forecastWeatherDesc = tomorrowData.WeatherDesc ?? null;
+    this.forecastWeatherDesc = tomorrowData.WeatherDescription ?? null;
 
   }
 
