@@ -53,4 +53,8 @@ export class Home {
   routeToTraffic() {
     this.router.navigate(['/traffic']);
   }
+
+  routeToMobility() {
+    this.router.navigate(['/mobility']);
+  }
 }

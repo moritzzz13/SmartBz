@@ -16,13 +16,24 @@
 
         <mat-card appearance="outlined" (click)="routeToTraffic()">
             <mat-card-header>
-                <mat-card-title>Verkehr & Mobilität</mat-card-title>
+                <mat-card-title>Verkehr</mat-card-title>
                 <mat-card-subtitle>Aktuelle Verkehrslage, Stauwarnungen und Sperrungen in Bozen. Finde jederzeit die schnellste und sicherste Route durch die Stadt.</mat-card-subtitle>
             </mat-card-header>
             <mat-card-actions align="end">
                 <button matButton (click)="routeToTraffic(); $event.stopPropagation()">Details ansehen</button>
             </mat-card-actions>
         </mat-card>
+
+        <mat-card appearance="outlined" (click)="routeToMobility()">
+            <mat-card-header>
+                <mat-card-title>Mobilität</mat-card-title>
+                <mat-card-subtitle>Bike und Carsharng im Überblick!</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-actions align="end">
+                <button matButton (click)="routeToMobility(); $event.stopPropagation()">Details ansehen</button>
+            </mat-card-actions>
+        </mat-card>
+
         <a href="https://www.suedtirolmobil.info/de/#/" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
             <mat-card appearance="outlined">
                 <mat-card-header>
